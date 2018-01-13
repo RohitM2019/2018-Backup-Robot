@@ -27,9 +27,9 @@ private:
 	const std::string kAutoNameDefault = "Default";
 	const std::string kAutoNameCustom = "My Auto";
 	std::string m_autoSelected;
-	TalonSRX rMotor ( rMotorNum );
-	TalonSRX lMotor ( lMotorNum );
-	frc::DifferentialDrive myRobot ( rMotor, lMotor );
+	TalonSRX *rMotor = new TalonSRX(rMotorNum);
+	TalonSRX *lMotor = new TalonSRX(lMotorNum);
+	frc::DifferentialDrive myRobot ( *rMotor, *lMotor );
 	frc::Joystick stick ( joystickNum );
 	void RobotInit() {
 		m_chooser.AddDefault(kAutoNameDefault, kAutoNameDefault);
