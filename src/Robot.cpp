@@ -23,18 +23,18 @@ const int lMotorNum = 6;
 class Robot: public frc::IterativeRobot {
 public:
 private:
-	frc::SendableChooser<std::string> m_chooser;
+	/*frc::SendableChooser<std::string> m_chooser;
 	const std::string kAutoNameDefault = "Default";
 	const std::string kAutoNameCustom = "My Auto";
-	std::string m_autoSelected;
+	std::string m_autoSelected;*/
 	TalonSRX *rMotor = new TalonSRX(rMotorNum);
 	TalonSRX *lMotor = new TalonSRX(lMotorNum);
 	frc::DifferentialDrive myRobot ( *rMotor, *lMotor );
 	frc::Joystick stick ( joystickNum );
 	void RobotInit() {
-		m_chooser.AddDefault(kAutoNameDefault, kAutoNameDefault);
+		/*m_chooser.AddDefault(kAutoNameDefault, kAutoNameDefault);
 		m_chooser.AddObject(kAutoNameCustom, kAutoNameCustom);
-		frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+		frc::SmartDashboard::PutData("Auto Modes", &m_chooser);*/
 	}
 
 	void AutonomousInit() override {
