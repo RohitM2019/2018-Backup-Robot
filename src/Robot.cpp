@@ -14,56 +14,30 @@
 #include <SmartDashboard/SendableChooser.h>
 #include <SmartDashboard/SmartDashboard.h>
 #include <ctre/Phoenix.h>
-#include <Spark.h>
 
-const int joystickNum = 0;
-const int rMotorNum = 2;
-const int lMotorNum = 6;
+
 
 class Robot: public frc::IterativeRobot {
 public:
+	const int joystickNum = 0;
+	const int rMotorNum = 2;
+	const int lMotorNum = 6;
 private:
-	/*frc::SendableChooser<std::string> m_chooser;
-	const std::string kAutoNameDefault = "Default";
-	const std::string kAutoNameCustom = "My Auto";
-	std::string m_autoSelected;*/
 	TalonSRX *rMotor = new TalonSRX(rMotorNum);
 	TalonSRX *lMotor = new TalonSRX(lMotorNum);
-	frc::DifferentialDrive myRobot ( rMotor, lMotor );
-	frc::Joystick stick ( joystickNum );
+
+	DifferentialDrive *myRobot = new DifferentialDrive((SpeedController&) rMotor,(SpeedController&) lMotor );
+	Joystick *stick = new Joystick(joystickNum);
 	void RobotInit() {
-		/*m_chooser.AddDefault(kAutoNameDefault, kAutoNameDefault);
-		m_chooser.AddObject(kAutoNameCustom, kAutoNameCustom);
-		frc::SmartDashboard::PutData("Auto Modes", &m_chooser);*/
-	}
 
-	void AutonomousInit() override {
-		m_autoSelected = m_chooser.GetSelected();
-		// m_autoSelected = SmartDashboard::GetString(
-		// 		"Auto Selector", kAutoNameDefault);
-		std::cout << "Auto selected: " << m_autoSelected << std::endl;
-
-		if (m_autoSelected == kAutoNameCustom) {
-			// Custom Auto goes here
-		} else {
-			// Default Auto goes here
-		}
-	}
-
-	void AutonomousPeriodic() {
-		if (m_autoSelected == kAutoNameCustom) {
-			// Custom Auto goes here
-		} else {
-
-		}
 	}
 
 	void TeleopInit() {
-		myRobot.ArcadeDrive(0, 0);
+		myRobot->ArcadeDrive(0, 0);
 	}
 
 	void TeleopPeriodic() {
-		myRobot.ArcadeDrive(stick.GetY(), stick.GetX());
+		//myRobot.ArcadeDrive(stick->GetY(), stick->GetX());
 	}
 };
 
