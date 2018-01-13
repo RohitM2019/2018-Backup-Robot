@@ -29,7 +29,7 @@ private:
 	std::string m_autoSelected;*/
 	TalonSRX *rMotor = new TalonSRX(rMotorNum);
 	TalonSRX *lMotor = new TalonSRX(lMotorNum);
-	frc::DifferentialDrive myRobot ( *rMotor, *lMotor );
+	frc::DifferentialDrive myRobot ( rMotor, lMotor );
 	frc::Joystick stick ( joystickNum );
 	void RobotInit() {
 		/*m_chooser.AddDefault(kAutoNameDefault, kAutoNameDefault);
