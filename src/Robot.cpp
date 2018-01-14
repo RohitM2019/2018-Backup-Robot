@@ -33,11 +33,13 @@ private:
 	}
 
 	void TeleopInit() {
-		myRobot->ArcadeDrive(0, 0);
+		myRobot->ArcadeDrive(1, 1);
 	}
 
 	void TeleopPeriodic() {
-		//myRobot.ArcadeDrive(stick->GetY(), stick->GetX());
+		myRobot->ArcadeDrive(stick->GetY(), stick->GetX());
+
+		myRobot->ArcadeDrive(1, 1);
 	}
 };
 
