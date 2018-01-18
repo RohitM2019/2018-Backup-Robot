@@ -23,24 +23,26 @@ public:
 	const int rMotorNum = 2;
 	const int lMotorNum = 6;
 private:
-	TalonSRX *rMotor = new TalonSRX(rMotorNum);
-	TalonSRX *lMotor = new TalonSRX(lMotorNum);
+	WPI_TalonSRX * _rghtFront = new WPI_TalonSRX(rMotorNum);
+	WPI_TalonSRX * _rghtFollower = new WPI_TalonSRX(lMotorNum);
 
 
-	DifferentialDrive *myRobot = new DifferentialDrive((SpeedController&) lMotor,(SpeedController&) rMotor );
+	DifferentialDrive *myRobot = new DifferentialDrive(*lMotor,*rMotor );
 	Joystick *stick = new Joystick(joystickNum);
+	
+	Faults _faults_L;
+	Faults _faults_R;
+	
 	void RobotInit() {
 
 	}
 
 	void TeleopInit() {
-		myRobot->ArcadeDrive(1.0, 1.0,true);
+		myRobot->ArcadeDrive(0.0, 0.0,true);
 	}
 
 	void TeleopPeriodic() {
-		//myRobot->ArcadeDrive(stick->GetY(), stick->GetX());
-
-		myRobot->ArcadeDrive(1.0, 1.0);
+		myRobot->ArcadeDrive(stick->GetY(), stick->GetX());
 	}
 
 	void AutonomousPeriodic() {
