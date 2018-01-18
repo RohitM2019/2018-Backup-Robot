@@ -26,18 +26,23 @@ private:
 	TalonSRX *rMotor = new TalonSRX(rMotorNum);
 	TalonSRX *lMotor = new TalonSRX(lMotorNum);
 
-	DifferentialDrive *myRobot = new DifferentialDrive((SpeedController&) rMotor,(SpeedController&) lMotor );
+	//DifferentialDrive *myRobot = new DifferentialDrive((SpeedController&) rMotor,(SpeedController&) lMotor );
 	Joystick *stick = new Joystick(joystickNum);
 	void RobotInit() {
 
 	}
 
 	void TeleopInit() {
-		myRobot->ArcadeDrive(0, 0);
+		//myRobot->ArcadeDrive(0, 0);
 	}
 
 	void TeleopPeriodic() {
 		//myRobot.ArcadeDrive(stick->GetY(), stick->GetX());
+	}
+
+	void AutonomousPeriodic() {
+		//rMotor->Set(ControlMode::Current, 1);
+		//lMotor->Set(ControlMode::Current, 1);
 	}
 };
 
