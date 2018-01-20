@@ -26,7 +26,6 @@ private:
 	WPI_TalonSRX * _rghtFront = new WPI_TalonSRX(rMotorNum);
 	WPI_TalonSRX * _rghtFollower = new WPI_TalonSRX(lMotorNum);
 
-
 	DifferentialDrive *myRobot = new DifferentialDrive(*_rghtFront,*_rghtFollower );
 	Joystick *stick = new Joystick(joystickNum);
 	
@@ -42,7 +41,7 @@ private:
 	}
 
 	void TeleopPeriodic() {
-		myRobot->ArcadeDrive(stick->GetY(), stick->GetX());
+		myRobot->ArcadeDrive(stick->GetMagnitude() , stick->GetDirectionRadians());
 	}
 
 	void AutonomousPeriodic() {
