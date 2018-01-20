@@ -27,7 +27,7 @@ private:
 	WPI_TalonSRX * _rghtFollower = new WPI_TalonSRX(lMotorNum);
 
 
-	DifferentialDrive *myRobot = new DifferentialDrive(*lMotor,*rMotor );
+	DifferentialDrive *myRobot = new DifferentialDrive(*_rghtFront,*_rghtFollower );
 	Joystick *stick = new Joystick(joystickNum);
 	
 	Faults _faults_L;
