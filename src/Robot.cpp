@@ -16,12 +16,12 @@
 #include <ctre/Phoenix.h>
 
 
-
 class Robot: public frc::IterativeRobot {
 public:
 	const int joystickNum = 0;
 	const int rMotorNum = 2;
 	const int lMotorNum = 6;
+	const double scale = 1;
 private:
 	WPI_TalonSRX * _rghtFront = new WPI_TalonSRX(rMotorNum);
 	WPI_TalonSRX * _rghtFollower = new WPI_TalonSRX(lMotorNum);
@@ -37,11 +37,12 @@ private:
 	}
 
 	void TeleopInit() {
-		myRobot->ArcadeDrive(0.0, 0.0,true);
+		myRobot->ArcadeDrive(0.0, 0.0);
 	}
 
+
 	void TeleopPeriodic() {
-		myRobot->ArcadeDrive(stick->GetMagnitude() , stick->GetDirectionRadians());
+		myRobot->ArcadeDrive(scale * stick->GetRawAxis(1), (stick->GetRawAxis(4) > 0? 1:-1) * stick->GetRawAxis(4) * stick->GetRawAxis(4));
 	}
 
 	void AutonomousPeriodic() {
