@@ -21,8 +21,12 @@ public:
 	const int joystickNum = 0;
 	const int rMotorNum = 2;
 	const int lMotorNum = 6;
-	const double scale = 1;
+	double scale = 1;
+	int packets = 0;
 private:
+	frc::LiveWindow& m_lw = *LiveWindow::GetInstance();
+	frc::SendableChooser<std::string> m_chooser;
+
 	WPI_TalonSRX * _rghtFront = new WPI_TalonSRX(rMotorNum);
 	WPI_TalonSRX * _rghtFollower = new WPI_TalonSRX(lMotorNum);
 
@@ -33,6 +37,8 @@ private:
 	Faults _faults_R;
 	
 	void RobotInit() {
+		m_chooser.AddObject("Scale", "Scale");
+		frc::SmartDashboard::PutData("Scale", &m_chooser);
 
 	}
 
@@ -40,8 +46,10 @@ private:
 		myRobot->ArcadeDrive(0.0, 0.0);
 	}
 
-
 	void TeleopPeriodic() {
+		packets++;
+		if(packets % 100 == 0)
+			scale = SmartDashboard::GetNumber("Scale", scale);
 		myRobot->ArcadeDrive(scale * stick->GetRawAxis(1), (stick->GetRawAxis(4) > 0? 1:-1) * stick->GetRawAxis(4) * stick->GetRawAxis(4));
 	}
 
