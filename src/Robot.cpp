@@ -33,7 +33,7 @@ private:
 	
 	WPI_TalonSRX *leftMotor = new WPI_TalonSRX(lMotorNum);
 
-	void RobotInit()
+	void RobotInit()//Robot-wide initialization code should go here.
 	{
 		ctre::phoenix::motorcontrol::FeedbackDevice qE = QuadEncoder;
 		leftMotor->ConfigSelectedFeedbackSensor(qE,0,0);
@@ -47,16 +47,19 @@ private:
 	}
 	*/
 
-	void TeleopInit() {
+	void TeleopInit()//Initialization code for teleop mode should go here.
+	{
 		myRobot->ArcadeDrive(0.0, 0.0);
 	}
 
 
-	void TeleopPeriodic() {
+	void TeleopPeriodic()//Periodic code for teleop mode should go here.
+	{
 		myRobot->ArcadeDrive(scale * stick->GetRawAxis(1), (stick->GetRawAxis(4) > 0? 1:-1) * stick->GetRawAxis(4) * stick->GetRawAxis(4));
 	}
 
-	void AutonomousPeriodic() {
+	void AutonomousPeriodic()//Periodic code for autonomous mode should go here.
+	{
 		//rMotor->Set(ControlMode::Current, 1);
 		//lMotor->Set(ControlMode::Current, 1);
 	}
