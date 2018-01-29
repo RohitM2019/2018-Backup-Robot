@@ -35,9 +35,9 @@ private:
 
 	void RobotInit()
 	{
-		leftMotor->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::FeedbackDevice::QuadEncoder,0,0);
+		ctre::phoenix::motorcontrol::FeedbackDevice qE = QuadEncoder;
+		leftMotor->ConfigSelectedFeedbackSensor(qE,0,0);
 	}
-
 	/*
 	void RobotEncoder() {
 		if (leftMotor->BaseMotorController::GetSelectedSensorPosition() == 0)
