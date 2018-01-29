@@ -14,7 +14,7 @@
 #include <SmartDashboard/SendableChooser.h>
 #include <SmartDashboard/SmartDashboard.h>
 #include <ctre/Phoenix.h>
-
+#include <WPI_TalonSRX.h>
 
 class Robot: public frc::IterativeRobot {
 public:
@@ -32,8 +32,14 @@ private:
 	Faults _faults_L;
 	Faults _faults_R;
 	
-	void RobotInit() {
+	WPI_TalonSRX *leftMotor = new WPI_TalonSRX(lMotorNum);
+	leftMotor->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::FeedbackDevice::QuadEncoder,0,0);
 
+	void RobotEncoder() {
+		if (leftMotor->BaseMotorController::GetSelectedSensorPosition-> someShit)
+		{
+			//do stuff
+		}
 	}
 
 	void TeleopInit() {
