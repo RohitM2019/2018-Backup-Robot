@@ -38,14 +38,8 @@ private:
 		ctre::phoenix::motorcontrol::FeedbackDevice qE = QuadEncoder;
 		leftMotor->ConfigSelectedFeedbackSensor(qE,0,0);
 	}
-	/*
-	void RobotEncoder() {
-		if (leftMotor->BaseMotorController::GetSelectedSensorPosition() == 0)
-		{
-			//do a thing
-		}
-	}
-	*/
+	
+	
 
 	void TeleopInit()//Initialization code for teleop mode should go here.
 	{
@@ -62,6 +56,11 @@ private:
 	{
 		//rMotor->Set(ControlMode::Current, 1);
 		//lMotor->Set(ControlMode::Current, 1);
+		if (leftMotor->BaseMotorController::GetSelectedSensorPosition(0) == 4)//4 is a test value, effect may not be noticeable.
+		{
+			//do a thing
+			
+		}
 	}
 };
 
