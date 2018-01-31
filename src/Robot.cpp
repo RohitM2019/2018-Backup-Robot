@@ -35,8 +35,8 @@ private:
 	}
 	
 	void AutonomousInit(){
-		_rMotor -> Set(ctre::phoenix::motorcontrol::ControlMode::Position,27600);
-		//20 feet
+
+
 	}
 
 
@@ -59,9 +59,12 @@ private:
 
 		//rMotor->Set(ControlMode::Current, 1);
 		//lMotor->Set(ControlMode::Current, 1);
-		if (_lMotor->BaseMotorController::GetSelectedSensorPosition(0) == 4)//4 is a test value, effect may not be noticeable.
+		if (_lMotor-> Get() == 0)//this should test for position, not velocity, or you'd never start to begin with
 		{
-			//do a thing
+		}
+		else{
+			_rMotor -> Set(ctre::phoenix::motorcontrol::ControlMode::Position,27600);
+			_lMotor -> Set(ctre::phoenix::motorcontrol::ControlMode::Position,27600);
 			
 		}
 
