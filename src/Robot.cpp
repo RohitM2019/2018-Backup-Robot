@@ -54,6 +54,10 @@ private:
 
 	void AutonomousPeriodic()//Periodic code for autonomous mode should go here.
 	{
+		WPI_TalonSRX::WPI_TalonSRX (2);
+		void WPI_TalonSRX::Set(ctre::phoenix::motorcontrol::ControlMode::Position,27600);
+		//20 feet
+
 		//rMotor->Set(ControlMode::Current, 1);
 		//lMotor->Set(ControlMode::Current, 1);
 		if (leftMotor->BaseMotorController::GetSelectedSensorPosition(0) == 4)//4 is a test value, effect may not be noticeable.
@@ -61,8 +65,6 @@ private:
 			//do a thing
 			
 		}
-		 WPI_TalonSRX::WPI_TalonSRX (2);
-		        void WPI_TalonSRX::Set(1,123);
 
 
 	}
