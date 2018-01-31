@@ -22,45 +22,44 @@ public:
 	const int lMotorNum = 6;
 	const double scale = 1;
 private:
-	WPI_TalonSRX * _rghtFront = new WPI_TalonSRX(rMotorNum);
-	WPI_TalonSRX * _rghtFollower = new WPI_TalonSRX(lMotorNum);
+	WPI_TalonSRX * _rMotor = new WPI_TalonSRX(rMotorNum);
+	WPI_TalonSRX * _lMotor = new WPI_TalonSRX(lMotorNum);
 
-	DifferentialDrive *myRobot = new DifferentialDrive(*_rghtFront,*_rghtFollower );
+	DifferentialDrive *myRobot = new DifferentialDrive(*_rMotor,*_lMotor );
 	Joystick *stick = new Joystick(joystickNum);
-	
-	Faults _faults_L;
-	Faults _faults_R;
-	
-	WPI_TalonSRX *leftMotor = new WPI_TalonSRX(lMotorNum);
 
-	void RobotInit()//Robot-wide initialization code should go here.
+	void RobotInit()
 	{
 		ctre::phoenix::motorcontrol::FeedbackDevice qE = QuadEncoder;
-		leftMotor->ConfigSelectedFeedbackSensor(qE,0,0);
+		_lMotor->ConfigSelectedFeedbackSensor(qE,0,0);
 	}
 	
-	
+	void AutonomousInit(){
+		_rMotor -> Set(ctre::phoenix::motorcontrol::ControlMode::Position,27600);
+		//20 feet
+	}
 
-	void TeleopInit()//Initialization code for teleop mode should go here.
+
+	void TeleopInit()
 	{
 		myRobot->ArcadeDrive(0.0, 0.0);
 	}
 
 
-	void TeleopPeriodic()//Periodic code for teleop mode should go here.
+	void TeleopPeriodic()
 	{
 		myRobot->ArcadeDrive(scale * stick->GetRawAxis(1), (stick->GetRawAxis(4) > 0? 1:-1) * stick->GetRawAxis(4) * stick->GetRawAxis(4));
 	}
 
 	void AutonomousPeriodic()//Periodic code for autonomous mode should go here.
 	{
-		WPI_TalonSRX::WPI_TalonSRX (2);
-		void WPI_TalonSRX::Set(ctre::phoenix::motorcontrol::ControlMode::Position,27600);
+		//WPI_TalonSRX::WPI_TalonSRX (2);
+		//void WPI_TalonSRX::Set(ctre::phoenix::motorcontrol::ControlMode::Position,27600);
 		//20 feet
 
 		//rMotor->Set(ControlMode::Current, 1);
 		//lMotor->Set(ControlMode::Current, 1);
-		if (leftMotor->BaseMotorController::GetSelectedSensorPosition(0) == 4)//4 is a test value, effect may not be noticeable.
+		if (_lMotor->BaseMotorController::GetSelectedSensorPosition(0) == 4)//4 is a test value, effect may not be noticeable.
 		{
 			//do a thing
 			
