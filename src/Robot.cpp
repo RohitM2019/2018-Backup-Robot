@@ -61,6 +61,10 @@ private:
 			//do a thing
 			
 		}
+		 WPI_TalonSRX::WPI_TalonSRX (2);
+		        void WPI_TalonSRX::Set(1,123);
+
+
 	}
 };
 
