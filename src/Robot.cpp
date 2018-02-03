@@ -40,8 +40,8 @@ private:
 		_rMotor->ConfigSelectedFeedbackSensor(qE,0,2);
 		_rMotor->SetSensorPhase(true);
 
-		_rMotor -> SetSafetyEnabled(false);
-		_lMotor -> SetSafetyEnabled(false);
+		_rMotor -> SetSafetyEnabled(true);
+		_lMotor -> SetSafetyEnabled(true);
 	}
 	
 	void AutonomousInit()
