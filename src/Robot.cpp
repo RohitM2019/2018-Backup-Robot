@@ -23,9 +23,11 @@ public:
 	const int rMotorNum = 2;
 	const int lMotorNum = 6;
 	const double scale = 1;
-	double pConstant = 1.00;
+	double pConstant = 1.0/400.0;
 	double iConstant = 0.00;
 	double dConstant = 0.00;
+	int checkTimeout = 0;
+	const double TICKS_PER_INCH = 325.95;
 private:
 	WPI_TalonSRX * _rMotor = new WPI_TalonSRX(rMotorNum);
 	WPI_TalonSRX * _lMotor = new WPI_TalonSRX(lMotorNum);
@@ -36,32 +38,35 @@ private:
 	void RobotInit()
 	{
 		ctre::phoenix::motorcontrol::FeedbackDevice qE = QuadEncoder;
-		_lMotor->ConfigSelectedFeedbackSensor(qE,0,2);
-		_rMotor->ConfigSelectedFeedbackSensor(qE,0,2);
-		_rMotor->SetSensorPhase(true);
-
-		_rMotor -> SetSafetyEnabled(true);
-		_lMotor -> SetSafetyEnabled(true);
+		_lMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
+		_rMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
 	}
 	
 	void AutonomousInit()
 	{
-		_lMotor->Config_kP(0,pConstant,2);
-		_lMotor->Config_kD(0,dConstant,2);
-		_lMotor->Config_kI(0,iConstant,2);
-		_lMotor->GetSensorCollection().SetQuadraturePosition(0, 2);
+		_lMotor->Config_kP(0,pConstant,checkTimeout);
+		_lMotor->Config_kD(0,dConstant,checkTimeout);
+		_lMotor->Config_kI(0,iConstant,checkTimeout);
+		_lMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 
-		_rMotor->Config_kP(0,pConstant,2);
-		_rMotor->Config_kD(0,dConstant,2);
-		_rMotor->Config_kI(0,iConstant,2);
-		_rMotor->GetSensorCollection().SetQuadraturePosition(0, 2);
+		_rMotor->Config_kP(0,pConstant,checkTimeout);
+		_rMotor->Config_kD(0,dConstant,checkTimeout);
+		_rMotor->Config_kI(0,iConstant,checkTimeout);
+		_rMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 
+		_rMotor->SetSafetyEnabled(true);
+		_lMotor->SetSafetyEnabled(true);
+
+		_rMotor->SelectProfileSlot(0,0);
+		_lMotor->SelectProfileSlot(0,0);
 	}
 
 
 	void TeleopInit()
 	{
 		myRobot->ArcadeDrive(0.0, 0.0);
+		_lMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
+		_rMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 	}
 
 
@@ -73,8 +78,9 @@ private:
 
 	void AutonomousPeriodic()
 	{
-		_rMotor -> Set(ctre::phoenix::motorcontrol::ControlMode::Position,6875.4);
-		_lMotor -> Set(ctre::phoenix::motorcontrol::ControlMode::Position,6875.4);
+		_rMotor -> Set(ctre::phoenix::motorcontrol::ControlMode::MotionProfile, TICKS_PER_INCH * 10);
+		_lMotor -> Set(ctre::phoenix::motorcontrol::ControlMode::Position, TICKS_PER_INCH * 10);
+		DriverStation::ReportError(std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Control Mode: " + std::to_string((int) _rMotor->GetControlMode()));
 		//Periodic code for autonomous mode should go here.
 		//114.59 ticks = 1 in for 4" wheel diamiter
 		//WPI_TalonSRX::WPI_TalonSRX (2);
