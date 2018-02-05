@@ -37,26 +37,43 @@ private:
 
 	void RobotInit()
 	{
+	//used to config the motor controllers for QuadEncoders(type of encoder)
 		ctre::phoenix::motorcontrol::FeedbackDevice qE = QuadEncoder;
+		//2nd arg = Primary closed-loop(If zero, no blocking or checking is performed.)
+		//Primary closed-loop =
 		_lMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
 		_rMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
 	}
 	
 	void AutonomousInit()
 	{
+	//config the PIDs
+
+		/*
+		 * 1. Start testing 0 for kI and kD
+		 * 2. Set kP until robot shakes
+		 * 3. increase kD until it stops isolating
+		 * 4. set kI for going up ramps
+		 */
+
+			//slotIdx = ?
 		_lMotor->Config_kP(0,pConstant,checkTimeout);
-		_lMotor->Config_kD(0,dConstant,checkTimeout);
 		_lMotor->Config_kI(0,iConstant,checkTimeout);
+		_lMotor->Config_kD(0,dConstant,checkTimeout);
+		//sets the encoder value
 		_lMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 
 		_rMotor->Config_kP(0,pConstant,checkTimeout);
-		_rMotor->Config_kD(0,dConstant,checkTimeout);
 		_rMotor->Config_kI(0,iConstant,checkTimeout);
+		_rMotor->Config_kD(0,dConstant,checkTimeout);
+		//sets the encoder value
 		_rMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 
+		//sets the safety (need this for FRC)
 		_rMotor->SetSafetyEnabled(true);
 		_lMotor->SetSafetyEnabled(true);
 
+		//Don't know
 		_rMotor->SelectProfileSlot(0,0);
 		_lMotor->SelectProfileSlot(0,0);
 	}
@@ -65,6 +82,8 @@ private:
 	void TeleopInit()
 	{
 		myRobot->ArcadeDrive(0.0, 0.0);
+
+		//sets the encoder value to 0
 		_lMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 		_rMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 	}
@@ -72,7 +91,10 @@ private:
 
 	void TeleopPeriodic()
 	{
+		//push more up/down/left/right on the controller the faster the robot moves
 		myRobot->ArcadeDrive(scale * stick->GetRawAxis(1), (stick->GetRawAxis(4) > 0? 1:-1) * stick->GetRawAxis(4) * stick->GetRawAxis(4));
+
+		//reports the error for the selected sensor position( 0 = Primary closed-loop)
 		DriverStation::ReportError(std::to_string(_rMotor->GetSelectedSensorPosition(0)));
 	}
 
@@ -80,21 +102,8 @@ private:
 	{
 		_rMotor -> Set(ctre::phoenix::motorcontrol::ControlMode::MotionProfile, TICKS_PER_INCH * 10);
 		_lMotor -> Set(ctre::phoenix::motorcontrol::ControlMode::Position, TICKS_PER_INCH * 10);
+
 		DriverStation::ReportError(std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Control Mode: " + std::to_string((int) _rMotor->GetControlMode()));
-		//Periodic code for autonomous mode should go here.
-		//114.59 ticks = 1 in for 4" wheel diamiter
-		//WPI_TalonSRX::WPI_TalonSRX (2);
-		//void WPI_TalonSRX::Set(ctre::phoenix::motorcontrol::ControlMode::Position,27600);
-		//20 feet
-		//_rMotor->Set(ControlMode::Current, 1);
-		//_lMotor->Set(ControlMode::Current, 1);
-		//if (_lMotor-> Get() == 0){
-			//this should test for position, not velocity, or you'd never start to begin with
-		//}
-		//else{
-			//
-			
-		//}
 	}
 };
 
