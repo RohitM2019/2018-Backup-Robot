@@ -43,6 +43,7 @@ private:
 		//Primary closed-loop =
 		_lMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
 		_rMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
+		_rMotor->SetSensorPhase(true);
 	}
 	
 	void AutonomousInit()
@@ -70,8 +71,8 @@ private:
 		_rMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 
 		//sets the safety (need this for FRC)
-	//	_rMotor->SetSafetyEnabled(true);
-	//	_lMotor->SetSafetyEnabled(true);
+		_rMotor->SetSafetyEnabled(true);
+		_lMotor->SetSafetyEnabled(true);
 
 		//Selects which CAN you are using
 		_rMotor->SelectProfileSlot(0,0);
@@ -107,9 +108,8 @@ private:
 		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position, TICKS_PER_INCH * 12 );
 		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position, TICKS_PER_INCH * 12 );
 
-
-		DriverStation::ReportError(std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Right Control Mode:: " + std::to_string((int) _rMotor->GetControlMode()));
-		DriverStation::ReportError(std::to_string(_lMotor->GetSelectedSensorPosition(0)) + " Left  Control Mode:: " + std::to_string((int) _lMotor->GetControlMode()));
+		//DriverStation::ReportError(std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Right Control Mode:: " + std::to_string((int) _rMotor->GetControlMode()));
+		//DriverStation::ReportError(std::to_string(_lMotor->GetSelectedSensorPosition(0)) + " Left  Control Mode:: " + std::to_string((int) _lMotor->GetControlMode()));
 	}
 };
 
