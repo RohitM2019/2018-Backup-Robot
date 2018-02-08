@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <string>
-#include <Drive/DifferentialDrive.h>
 #include <Joystick.h>
 #include <IterativeRobot.h>
 #include <LiveWindow/LiveWindow.h>
@@ -16,6 +15,7 @@
 #include <ctre/Phoenix.h>
 #include <DriverStation.h>
 #include <MotorSafetyHelper.h>
+#include "SFDrive.h"
 
 class Robot: public frc::IterativeRobot {
 public:
@@ -32,7 +32,8 @@ private:
 	WPI_TalonSRX * _rMotor = new WPI_TalonSRX(rMotorNum);
 	WPI_TalonSRX * _lMotor = new WPI_TalonSRX(lMotorNum);
 
-	DifferentialDrive *myRobot = new DifferentialDrive(*_lMotor,*_rMotor );
+
+	SFDrive *myRobot = new SFDrive(_lMotor, _rMotor );
 	Joystick *stick = new Joystick(joystickNum);
 
 	void RobotInit()
