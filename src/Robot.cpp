@@ -56,7 +56,9 @@ private:
 		_rMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
 		_rMotor->SetSensorPhase(true);
 		_lMotor->SetSensorPhase(true);
-
+		frc::SmartDashboard::PutNumber("P", pConstant);
+		frc::SmartDashboard::PutNumber("I", iConstant);
+		frc::SmartDashboard::PutNumber("D", dConstant);
 
 	}
 	
