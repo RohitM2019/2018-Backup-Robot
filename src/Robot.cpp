@@ -25,9 +25,9 @@ public:
 	const double scale = 1;
 	int inches = 0;
 	//PID for L motor
-	double l_pConstant = 1.0/1000.0;
-	double l_iConstant = 0.000001;
-	double l_dConstant = 0.0001;
+	double l_pConstant = 0.01;
+	double l_iConstant = 0.01;
+	double l_dConstant = 0.01;
 
 	//PID for R motor
 	double r_pConstant = 1.0/1000.0;
@@ -125,16 +125,14 @@ private:
 	{
 		countms = countms + 1;
 		if(countms == 6){
-			r_error = (TICKS_PER_INCH * inches)-(_rMotor->GetSelectedSensorPosition(0));
-			l_error = (TICKS_PER_INCH * inches)-(_lMotor->GetSelectedSensorPosition(0));
 			countms = 0;
 
-			DriverStation::ReportError("right: " + std::to_string(r_error) + "  left: " + std::to_string(l_error));
+			DriverStation::ReportError("right: " + std::to_string(_rMotor->GetSelectedSensorPosition(0)) + "  left: " + std::to_string(_lMotor->GetSelectedSensorPosition(0)));
 			//DriverStation::ReportError("left: " + std::to_string(l_error));
 		}
 
 		//Should be in Init
-		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,100);
+		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,.1);
 		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,100);
 		//_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
 		//_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
