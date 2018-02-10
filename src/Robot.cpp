@@ -89,8 +89,8 @@ private:
 		_rMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 
 		//sets the safety (need this for FRC)
-		_rMotor->SetSafetyEnabled(true);
-		_lMotor->SetSafetyEnabled(true);
+		_rMotor->SetSafetyEnabled(false);
+		_lMotor->SetSafetyEnabled(false);
 
 		//Selects which CAN you are using
 		_rMotor->SelectProfileSlot(0,0);
