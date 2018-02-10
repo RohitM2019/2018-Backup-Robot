@@ -26,13 +26,13 @@ public:
 	int inches = 0;
 	//PID for L motor
 	double l_pConstant = 1.0/1000.0;
-	double l_iConstant = 0.01;
-	double l_dConstant = 10000.00;
+	double l_iConstant = 0.000001;
+	double l_dConstant = 0.0001;
 
 	//PID for R motor
-	double r_pConstant = 1.0/20000.0;
-	double r_iConstant = 0.01;
-	double r_dConstant = 10000.00;
+	double r_pConstant = 1.0/1000.0;
+	double r_iConstant = l_iConstant;
+	double r_dConstant = l_dConstant;
 
 
 	int checkTimeout = 0;
@@ -73,6 +73,8 @@ private:
 		 * 4. set kI for going up ramps
 		 */
 
+		_lMotor->SetInverted(true);
+		_rMotor->SetInverted(true);
 			//slotIdx = Which CAN bus
 		_lMotor->Config_kP(0,l_pConstant,checkTimeout);
 		_lMotor->Config_kI(0,l_iConstant,checkTimeout);
@@ -132,10 +134,10 @@ private:
 		}
 
 		//Should be in Init
-		//_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH * inches);
-		//_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH * inches);
-		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
-		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
+		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,100);
+		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,100);
+		//_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
+		//_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
 		//_rMotor->_safetyHelper.ClearError();
 		//DriverStation::ReportError(std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Right Control Mode:: " + std::to_string((int) _rMotor->GetControlMode()));
 		//DriverStation::ReportError(std::to_string(_lMotor->GetSelectedSensorPosition(0)) + " Left  Control Mode:: " + std::to_string((int) _lMotor->GetControlMode()));
