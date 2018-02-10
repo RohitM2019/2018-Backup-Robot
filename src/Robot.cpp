@@ -25,14 +25,11 @@ public:
 	const double scale = 1;
 	int inches = 0;
 	//PID for L motor
-	double l_pConstant = 0.01;
-	double l_iConstant = 0.01;
-	double l_dConstant = 0.01;
+	double pConstant = 1;
+	double iConstant = 0.001;
+	double dConstant = 1;
 
-	//PID for R motor
-	double r_pConstant = 1.0/1000.0;
-	double r_iConstant = l_iConstant;
-	double r_dConstant = l_dConstant;
+
 
 
 	int checkTimeout = 0;
@@ -58,6 +55,7 @@ private:
 		_lMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
 		_rMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
 		_rMotor->SetSensorPhase(true);
+		_lMotor->SetSensorPhase(true);
 
 
 	}
@@ -76,15 +74,15 @@ private:
 		_lMotor->SetInverted(true);
 		_rMotor->SetInverted(true);
 			//slotIdx = Which CAN bus
-		_lMotor->Config_kP(0,l_pConstant,checkTimeout);
-		_lMotor->Config_kI(0,l_iConstant,checkTimeout);
-		_lMotor->Config_kD(0,l_dConstant,checkTimeout);
+		_lMotor->Config_kP(0,pConstant,checkTimeout);
+		_lMotor->Config_kI(0,iConstant,checkTimeout);
+		_lMotor->Config_kD(0,dConstant,checkTimeout);
 		//sets the encoder value
 		_lMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 
-		_rMotor->Config_kP(0,r_pConstant,checkTimeout);
-		_rMotor->Config_kI(0,r_iConstant,checkTimeout);
-		_rMotor->Config_kD(0,r_dConstant,checkTimeout);
+		_rMotor->Config_kP(0,pConstant,checkTimeout);
+		_rMotor->Config_kI(0,iConstant,checkTimeout);
+		_rMotor->Config_kD(0,dConstant,checkTimeout);
 		//sets the encoder value
 		_rMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 
@@ -132,7 +130,7 @@ private:
 		}
 
 		//Should be in Init
-		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,.1);
+		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,-100);
 		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,100);
 		//_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
 		//_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
