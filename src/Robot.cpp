@@ -23,9 +23,18 @@ public:
 	const int rMotorNum = 2;
 	const int lMotorNum = 6;
 	const double scale = 1;
-	double pConstant = 1.0/400.0;
-	double iConstant = 0.00;
-	double dConstant = 0.00;
+	//PID for L motor
+	double l_pConstant = 1.0/800.0;
+	double l_iConstant = 0.01;
+	double l_dConstant = 0.001;
+
+	//PID for R motor
+	double r_pConstant = 1.0/200.0;
+	double r_iConstant = 0.01;
+	double r_dConstant = 0.001;
+
+	//double error = (TICKS_PER_INCH * 12)-(_rMotor->GetSelectedSensorPosition(0));
+
 	int checkTimeout = 0;
 	const double TICKS_PER_INCH = 325.95;
 private:
@@ -59,15 +68,15 @@ private:
 		 */
 
 			//slotIdx = Which CAN bus
-		_lMotor->Config_kP(0,pConstant,checkTimeout);
-		_lMotor->Config_kI(0,iConstant,checkTimeout);
-		_lMotor->Config_kD(0,dConstant,checkTimeout);
+		_lMotor->Config_kP(0,l_pConstant,checkTimeout);
+		_lMotor->Config_kI(0,l_iConstant,checkTimeout);
+		_lMotor->Config_kD(0,l_dConstant,checkTimeout);
 		//sets the encoder value
 		_lMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 
-		_rMotor->Config_kP(0,pConstant,checkTimeout);
-		_rMotor->Config_kI(0,iConstant,checkTimeout);
-		_rMotor->Config_kD(0,dConstant,checkTimeout);
+		_rMotor->Config_kP(0,r_pConstant,checkTimeout);
+		_rMotor->Config_kI(0,r_iConstant,checkTimeout);
+		_rMotor->Config_kD(0,r_dConstant,checkTimeout);
 		//sets the encoder value
 		_rMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 
@@ -106,8 +115,10 @@ private:
 	void AutonomousPeriodic()
 	{
 		//Should be in Init
-		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position, TICKS_PER_INCH * 12 );
-		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position, TICKS_PER_INCH * 12 );
+		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH * 12);
+		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH * 12);
+
+		//DriverStation::ReportError(std::to_string(error));
 
 		//DriverStation::ReportError(std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Right Control Mode:: " + std::to_string((int) _rMotor->GetControlMode()));
 		//DriverStation::ReportError(std::to_string(_lMotor->GetSelectedSensorPosition(0)) + " Left  Control Mode:: " + std::to_string((int) _lMotor->GetControlMode()));
