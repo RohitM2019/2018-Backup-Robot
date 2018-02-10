@@ -23,15 +23,16 @@ public:
 	const int rMotorNum = 2;
 	const int lMotorNum = 6;
 	const double scale = 1;
+	int inches = 0;
 	//PID for L motor
-	double l_pConstant = 1.0/100000.0;
+	double l_pConstant = 1.0/1000.0;
 	double l_iConstant = 0.01;
-	double l_dConstant = 0.001;
+	double l_dConstant = 10000.00;
 
 	//PID for R motor
-	double r_pConstant = 1.0/200.0;
+	double r_pConstant = 1.0/20000.0;
 	double r_iConstant = 0.01;
-	double r_dConstant = 0.001;
+	double r_dConstant = 10000.00;
 
 
 	int checkTimeout = 0;
@@ -44,9 +45,10 @@ private:
 	SFDrive *myRobot = new SFDrive(_lMotor, _rMotor );
 	Joystick *stick = new Joystick(joystickNum);
 
-	double r_error = (TICKS_PER_INCH * 12)-(_rMotor->GetSelectedSensorPosition(0));
-	double l_error = (TICKS_PER_INCH * 12)-(_lMotor->GetSelectedSensorPosition(0));
+	double r_error = (TICKS_PER_INCH * inches)-(_rMotor->GetSelectedSensorPosition(0));
+	double l_error = (TICKS_PER_INCH * inches)-(_lMotor->GetSelectedSensorPosition(0));
 
+	int countms = 0;
 	void RobotInit()
 	{
 	//used to config the motor controllers for QuadEncoders(type of encoder)
@@ -102,6 +104,8 @@ private:
 		//sets the encoder value to 0 to begin with
 		_lMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
 		_rMotor->GetSensorCollection().SetQuadraturePosition(0, checkTimeout);
+		_lMotor->SetInverted(true);
+		_rMotor->SetInverted(true);
 
 	}
 
@@ -112,19 +116,27 @@ private:
 		myRobot->ArcadeDrive(scale * stick->GetRawAxis(1), (stick->GetRawAxis(4) > 0? 1:-1) * stick->GetRawAxis(4) * stick->GetRawAxis(4));
 
 		//reports the error for the selected sensor position( 0 = Primary closed-loop)
-		DriverStation::ReportError(std::to_string(_rMotor->GetSelectedSensorPosition(0)));
-		DriverStation::ReportError(std::to_string(_lMotor->GetSelectedSensorPosition(0)));
+		DriverStation::ReportError("Right Motor: " + std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Left Motor: " + std::to_string(_lMotor->GetSelectedSensorPosition(0)));
 	}
 
 	void AutonomousPeriodic()
 	{
+		countms = countms + 1;
+		if(countms == 6){
+			r_error = (TICKS_PER_INCH * inches)-(_rMotor->GetSelectedSensorPosition(0));
+			l_error = (TICKS_PER_INCH * inches)-(_lMotor->GetSelectedSensorPosition(0));
+			countms = 0;
+
+			DriverStation::ReportError("right: " + std::to_string(r_error) + "  left: " + std::to_string(l_error));
+			//DriverStation::ReportError("left: " + std::to_string(l_error));
+		}
+
 		//Should be in Init
-		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH * 12);
-		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH * 12);
-
-		DriverStation::ReportError("right: " + std::to_string(r_error));
-		DriverStation::ReportError("left: " + std::to_string(l_error));
-
+		//_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH * inches);
+		//_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH * inches);
+		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
+		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
+		//_rMotor->_safetyHelper.ClearError();
 		//DriverStation::ReportError(std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Right Control Mode:: " + std::to_string((int) _rMotor->GetControlMode()));
 		//DriverStation::ReportError(std::to_string(_lMotor->GetSelectedSensorPosition(0)) + " Left  Control Mode:: " + std::to_string((int) _lMotor->GetControlMode()));
 	}
