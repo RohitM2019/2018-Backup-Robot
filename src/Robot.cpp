@@ -24,7 +24,7 @@ public:
 	const int lMotorNum = 6;
 	const double scale = 1;
 	//PID for L motor
-	double l_pConstant = 1.0/800.0;
+	double l_pConstant = 1.0/100000.0;
 	double l_iConstant = 0.01;
 	double l_dConstant = 0.001;
 
@@ -33,7 +33,6 @@ public:
 	double r_iConstant = 0.01;
 	double r_dConstant = 0.001;
 
-	//double error = (TICKS_PER_INCH * 12)-(_rMotor->GetSelectedSensorPosition(0));
 
 	int checkTimeout = 0;
 	const double TICKS_PER_INCH = 325.95;
@@ -45,6 +44,9 @@ private:
 	SFDrive *myRobot = new SFDrive(_lMotor, _rMotor );
 	Joystick *stick = new Joystick(joystickNum);
 
+	double r_error = (TICKS_PER_INCH * 12)-(_rMotor->GetSelectedSensorPosition(0));
+	double l_error = (TICKS_PER_INCH * 12)-(_lMotor->GetSelectedSensorPosition(0));
+
 	void RobotInit()
 	{
 	//used to config the motor controllers for QuadEncoders(type of encoder)
@@ -54,6 +56,8 @@ private:
 		_lMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
 		_rMotor->ConfigSelectedFeedbackSensor(qE,0,checkTimeout);
 		_rMotor->SetSensorPhase(true);
+
+
 	}
 	
 	void AutonomousInit()
@@ -118,7 +122,8 @@ private:
 		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH * 12);
 		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH * 12);
 
-		//DriverStation::ReportError(std::to_string(error));
+		DriverStation::ReportError("right: " + std::to_string(r_error));
+		DriverStation::ReportError("left: " + std::to_string(l_error));
 
 		//DriverStation::ReportError(std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Right Control Mode:: " + std::to_string((int) _rMotor->GetControlMode()));
 		//DriverStation::ReportError(std::to_string(_lMotor->GetSelectedSensorPosition(0)) + " Left  Control Mode:: " + std::to_string((int) _lMotor->GetControlMode()));
