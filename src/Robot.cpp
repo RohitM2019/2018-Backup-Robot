@@ -29,9 +29,6 @@ public:
 	double iConstant = 0.001;
 	double dConstant = 1;
 
-
-
-
 	int checkTimeout = 0;
 	const double TICKS_PER_INCH = 325.95;
 private:
