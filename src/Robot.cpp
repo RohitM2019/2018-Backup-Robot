@@ -23,11 +23,11 @@ public:
 	const int rMotorNum = 2;
 	const int lMotorNum = 6;
 	const double scale = 1;
-	int inches = 0;
+	int inches = 120;
 	//PID for L motor
-	double pConstant = 1;
+	double pConstant = 1.0/4.00;
 	double iConstant = 0.001;
-	double dConstant = 1;
+	double dConstant = 0;
 
 	int checkTimeout = 0;
 	const double TICKS_PER_INCH = 325.95;
@@ -129,8 +129,8 @@ private:
 		}
 
 		//Should be in Init
-		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,-100);
-		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,100);
+		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,-(TICKS_PER_INCH* inches));
+		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,TICKS_PER_INCH* inches);
 		//_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
 		//_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,0);
 		//_rMotor->_safetyHelper.ClearError();
