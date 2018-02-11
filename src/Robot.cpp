@@ -23,9 +23,9 @@ public:
 	const int rMotorNum = 2;
 	const int lMotorNum = 6;
 	const double scale = 1;
-	int inches = 120;
+	int inches = 60;
 	//PID for L motor
-	double pConstant = 1.0/4.00;
+	double pConstant = .1;
 	double iConstant = 0.001;
 	double dConstant = 0;
 
@@ -43,6 +43,8 @@ private:
 	double l_error = (TICKS_PER_INCH * inches)-(_lMotor->GetSelectedSensorPosition(0));
 
 	int countms = 0;
+
+	double setpoint = 0;
 	void RobotInit()
 	{
 	//used to config the motor controllers for QuadEncoders(type of encoder)
@@ -64,8 +66,8 @@ private:
 	//config the PIDs
 
 		/*
-		 * 1. Start testing 0 for kI and kD
-		 * 2. Set kP until robot shakes
+		 * (done) 1. Start testing 0 for kI and kD
+		 * (done) 2. Set kP until robot shakes Kp = 1
 		 * 3. increase kD until it stops isolating
 		 * 4. set kI for going up ramps
 		 */
@@ -112,10 +114,20 @@ private:
 	void TeleopPeriodic()
 	{
 		//push more up/down/left/right on the controller the faster the robot moves
-		myRobot->ArcadeDrive(scale * stick->GetRawAxis(1), (stick->GetRawAxis(4) > 0? 1:-1) * stick->GetRawAxis(4) * stick->GetRawAxis(4));
+		//myRobot->ArcadeDrive(scale * stick->GetRawAxis(1), (stick->GetRawAxis(4) > 0? 1:-1) * stick->GetRawAxis(4) * stick->GetRawAxis(4));
 
+		if(stick->GetRawButtonReleased(1)){
+			setpoint += 4096.001;
+		}
+		if(stick->GetRawButtonReleased(2)){
+					setpoint -= 4096.001;
+		}
+
+		_rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,-(setpoint));
+		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,setpoint);
 		//reports the error for the selected sensor position( 0 = Primary closed-loop)
 		DriverStation::ReportError("Right Motor: " + std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Left Motor: " + std::to_string(_lMotor->GetSelectedSensorPosition(0)));
+		DriverStation::ReportError();
 	}
 
 	void AutonomousPeriodic()
@@ -125,6 +137,13 @@ private:
 			countms = 0;
 
 			DriverStation::ReportError("right: " + std::to_string(_rMotor->GetSelectedSensorPosition(0)) + "  left: " + std::to_string(_lMotor->GetSelectedSensorPosition(0)));
+			DriverStation::ReportError("D: " +
+					std::to_string(_lMotor->ConfigGetParameter(eProfileParamSlot_D,0,checkTimeout)) +
+					"I: " +
+					std::to_string(_lMotor->ConfigGetParameter(eProfileParamSlot_I,0,checkTimeout)) +
+					"P: " +
+					std::to_string(_lMotor->ConfigGetParameter(eProfileParamSlot_P,0,checkTimeout)));
+
 			//DriverStation::ReportError("left: " + std::to_string(l_error));
 		}
 
