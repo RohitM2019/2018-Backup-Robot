@@ -127,7 +127,14 @@ private:
 		_lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position,setpoint);
 		//reports the error for the selected sensor position( 0 = Primary closed-loop)
 		DriverStation::ReportError("Right Motor: " + std::to_string(_rMotor->GetSelectedSensorPosition(0)) + " Left Motor: " + std::to_string(_lMotor->GetSelectedSensorPosition(0)));
-		DriverStation::ReportError();
+
+		DriverStation::ReportError("right: " + std::to_string(_rMotor->GetSelectedSensorPosition(0)) + "  left: " + std::to_string(_lMotor->GetSelectedSensorPosition(0)));
+		DriverStation::ReportError("D: " +
+			std::to_string(_lMotor->ConfigGetParameter(eProfileParamSlot_D,0,checkTimeout)) +
+			"I: " +
+			std::to_string(_lMotor->ConfigGetParameter(eProfileParamSlot_I,0,checkTimeout)) +
+			"P: " +
+			std::to_string(_lMotor->ConfigGetParameter(eProfileParamSlot_P,0,checkTimeout)));
 	}
 
 	void AutonomousPeriodic()
@@ -135,15 +142,6 @@ private:
 		countms = countms + 1;
 		if(countms == 6){
 			countms = 0;
-
-			DriverStation::ReportError("right: " + std::to_string(_rMotor->GetSelectedSensorPosition(0)) + "  left: " + std::to_string(_lMotor->GetSelectedSensorPosition(0)));
-			DriverStation::ReportError("D: " +
-					std::to_string(_lMotor->ConfigGetParameter(eProfileParamSlot_D,0,checkTimeout)) +
-					"I: " +
-					std::to_string(_lMotor->ConfigGetParameter(eProfileParamSlot_I,0,checkTimeout)) +
-					"P: " +
-					std::to_string(_lMotor->ConfigGetParameter(eProfileParamSlot_P,0,checkTimeout)));
-
 			//DriverStation::ReportError("left: " + std::to_string(l_error));
 		}
 
