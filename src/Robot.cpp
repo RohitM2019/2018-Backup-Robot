@@ -105,28 +105,7 @@ class Robot : public frc::IterativeRobot
 
         void TeleopPeriodic ()
         {
-            //push more up/down/left/right on the controller the faster the robot moves
-            //myRobot->ArcadeDrive(scale * stick->GetRawAxis(1), (stick->GetRawAxis(4) > 0? 1:-1) * stick->GetRawAxis(4) * stick->GetRawAxis(4));
-
-            //if you release A button move one rotation forward(used to set the PIDs
-            if (stick->GetRawButtonReleased (1))
-            {
-                setpoint += 4096.001;
-            }
-            //if you release B button move one rotation backwards
-            if (stick->GetRawButtonReleased (2))
-            {
-                setpoint -= 4096.001;
-            }
-            _rMotor->Set (ctre::phoenix::motorcontrol::ControlMode::Position, -(setpoint));
-            _lMotor->Set (ctre::phoenix::motorcontrol::ControlMode::Position, setpoint);
-
-            //reports the encoder values of Right and Left motors
-            DriverStation::ReportError ("Right Motor: " + std::to_string (_rMotor->GetSelectedSensorPosition (0)) + " Left Motor: " + std::to_string (_lMotor->GetSelectedSensorPosition (0)));
-
-            //reports what values the PIDs are
-            DriverStation::ReportError ("right: " + std::to_string (_rMotor->GetSelectedSensorPosition (0)) + "  left: " + std::to_string (_lMotor->GetSelectedSensorPosition (0)));
-            DriverStation::ReportError ("D: " + std::to_string (_lMotor->ConfigGetParameter (eProfileParamSlot_D, 0, checkTimeout)) + "I: " + std::to_string (_lMotor->ConfigGetParameter (eProfileParamSlot_I, 0, checkTimeout)) + "P: " + std::to_string (_lMotor->ConfigGetParameter (eProfileParamSlot_P, 0, checkTimeout)));
+            myRobot->ArcadeDrive (scale * stick->GetRawAxis (1), -(stick->GetRawAxis (4) > 0 ? 1 : -1) * stick->GetRawAxis (4) * stick->GetRawAxis (4));
         }
 
         void TestInit ()
