@@ -8,10 +8,12 @@ class SFDrive
 private: //MEMBER VARIABLES
 	WPI_TalonSRX * m_leftMotor;
 	WPI_TalonSRX * m_rightMotor;
+	double m_deadband = 0.08;
 
 public:
 	SFDrive(WPI_TalonSRX * lMotor, WPI_TalonSRX * rMotor);
-	void ArcadeDrive(double xSpeed, double zRotation);
+        void ArcadeDrive(double xSpeed, double zRotation);
+        void PIDDrive(double _rMotorSet, double _lMotorSet);
 };
 
 #endif

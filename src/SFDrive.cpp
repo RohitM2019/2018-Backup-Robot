@@ -7,32 +7,42 @@ SFDrive::SFDrive(WPI_TalonSRX * lMotor, WPI_TalonSRX * rMotor) :
 }
 
 void SFDrive::ArcadeDrive(double xSpeed, double zRotation) {
-	double leftMotorOutput;
-	double rightMotorOutput;
+        double leftMotorOutput;
+        double rightMotorOutput;
 
-	double maxInput = std::copysign(std::max(std::abs(xSpeed), std::abs(zRotation)), xSpeed);
+        if(fabs(xSpeed) <= m_deadband)
+            xSpeed = 0;
+        if(fabs(zRotation) <= m_deadband)
+            zRotation = 0;
 
-	if (xSpeed >= 0.0) {
-		// First quadrant, else second quadrant
-		if (zRotation >= 0.0) {
-			leftMotorOutput = maxInput;
-			rightMotorOutput = xSpeed - zRotation;
-		} else {
-			leftMotorOutput = xSpeed + zRotation;
-			rightMotorOutput = maxInput;
-		}
-	} else {
-		// Third quadrant, else fourth quadrant
-		if (zRotation >= 0.0) {
-			leftMotorOutput = xSpeed + zRotation;
-			rightMotorOutput = maxInput;
-		} else {
-			leftMotorOutput = maxInput;
-			rightMotorOutput = xSpeed - zRotation;
-		}
-	}
+        double maxInput = std::copysign(std::max(std::abs(xSpeed), std::abs(zRotation)), xSpeed);
 
-	m_leftMotor->Set(leftMotorOutput);
-	m_rightMotor->Set(-rightMotorOutput);
+        if (xSpeed >= 0.0) {
+                // First quadrant, else second quadrant
+                if (zRotation >= 0.0) {
+                        leftMotorOutput = maxInput;
+                        rightMotorOutput = xSpeed - zRotation;
+                } else {
+                        leftMotorOutput = xSpeed + zRotation;
+                        rightMotorOutput = maxInput;
+                }
+        } else {
+                // Third quadrant, else fourth quadrant
+                if (zRotation >= 0.0) {
+                        leftMotorOutput = xSpeed + zRotation;
+                        rightMotorOutput = maxInput;
+                } else {
+                        leftMotorOutput = maxInput;
+                        rightMotorOutput = xSpeed - zRotation;
+                }
+        }
 
+        m_leftMotor->Set(leftMotorOutput);
+        m_rightMotor->Set(-rightMotorOutput);
+}
+
+void SFDrive::PIDDrive(double _lMotorSet, double _rMotorSet)
+{
+    m_leftMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position, _lMotorSet);
+    m_rightMotor->Set(ctre::phoenix::motorcontrol::ControlMode::Position, _rMotorSet);
 }
