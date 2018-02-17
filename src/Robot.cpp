@@ -19,7 +19,6 @@
 
 class Robot : public frc::IterativeRobot
 {
-
     public:
         const int joystickNum = 0;
         const int rMotorNum = 2;
@@ -68,6 +67,9 @@ class Robot : public frc::IterativeRobot
             frc::SmartDashboard::PutNumber ("P", pConstant);
             frc::SmartDashboard::PutNumber ("I", iConstant);
             frc::SmartDashboard::PutNumber ("D", dConstant);
+
+            _rMotor->ConfigMaxIntegralAccumulator(0, 0.1, checkTimeout);
+            _lMotor->ConfigMaxIntegralAccumulator(0, 0.1, checkTimeout);
 
         }
 
@@ -156,7 +158,6 @@ class Robot : public frc::IterativeRobot
             _lMotor->Config_kP (0, pConstant, checkTimeout);
             _lMotor->Config_kI (0, iConstant, checkTimeout);
             _lMotor->Config_kD (0, dConstant, checkTimeout);
-
             _rMotor->Config_kP (0, pConstant, checkTimeout);
             _rMotor->Config_kI (0, iConstant, checkTimeout);
             _rMotor->Config_kD (0, dConstant, checkTimeout);
