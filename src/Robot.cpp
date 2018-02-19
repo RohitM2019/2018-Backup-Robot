@@ -27,10 +27,11 @@ class Robot : public frc::IterativeRobot
         //used for auton distance
         int inches = 60;
         const double TICKS_PER_INCH = 325.95;
-        //PID variables
-        double pConstant = .1;
-        double iConstant = 0.001;
+        //PID variables. TODO - FIGURE OUT WHY THE HELL THIS WORKS
+        double pConstant = 1;
+        double iConstant = 0;
         double dConstant = 0;
+        double maxAccel = 1000;
         double setPoint = 0;
         //the timeout that you want to set.(If zero, no blocking or checking is performed.)
         int checkTimeout = 0;
@@ -43,15 +44,6 @@ class Robot : public frc::IterativeRobot
         SFDrive *myRobot = new SFDrive (_lMotor, _rMotor);
         Joystick *stick = new Joystick (joystickNum);
 
-        //the error for the PIDs
-        double r_error = (TICKS_PER_INCH * inches) - (_rMotor->GetSelectedSensorPosition (0));
-        double l_error = (TICKS_PER_INCH * inches) - (_lMotor->GetSelectedSensorPosition (0));
-
-        int countms = 0;
-
-        //used for setting the PIDs in teleop
-        double setpoint = 0;
-
         void RobotInit ()
         {
             //used to config the motor controllers for QuadEncoders(type of encoder)
@@ -60,13 +52,8 @@ class Robot : public frc::IterativeRobot
             _rMotor->ConfigSelectedFeedbackSensor (qE, 0, checkTimeout);
 
             //used for inverting motors
-            _rMotor->SetSensorPhase (true);
-            _lMotor->SetSensorPhase (true);
-
-            //adds PIDs to shuffle board
-            frc::SmartDashboard::PutNumber ("P", pConstant);
-            frc::SmartDashboard::PutNumber ("I", iConstant);
-            frc::SmartDashboard::PutNumber ("D", dConstant);
+            _rMotor->SetSensorPhase(true);
+            _lMotor->SetSensorPhase(true);
 
             _rMotor->ConfigMaxIntegralAccumulator(0, 0.1, checkTimeout);
             _lMotor->ConfigMaxIntegralAccumulator(0, 0.1, checkTimeout);
@@ -95,14 +82,6 @@ class Robot : public frc::IterativeRobot
         void TeleopInit ()
         {
             myRobot->ArcadeDrive (0.0, 0.0);
-
-            //sets the encoder value to 0 to begin with
-            _lMotor->GetSensorCollection ().SetQuadraturePosition (0, checkTimeout);
-            _rMotor->GetSensorCollection ().SetQuadraturePosition (0, checkTimeout);
-
-            //inverts the motors in teleop
-            _lMotor->SetInverted (true);
-            _rMotor->SetInverted (true);
         }
 
         void TeleopPeriodic ()
@@ -118,33 +97,46 @@ class Robot : public frc::IterativeRobot
             SmartDashboard::PutNumber ("P Drive", pConstant);
             SmartDashboard::PutNumber ("I Drive", iConstant);
             SmartDashboard::PutNumber ("D Drive", dConstant);
+            SmartDashboard::PutNumber("Maximum Acceleration", maxAccel);
             SmartDashboard::PutNumber ("Setpoint Drive", 0);
             SmartDashboard::PutNumber ("Current Position - Right", 0);
             SmartDashboard::PutNumber ("Current Position - Left", 0);
+            SmartDashboard::PutNumber("lMotor Profile", 0);
+            SmartDashboard::PutNumber("rMotor Profile", 0);
             DriverStation::ReportError ("TestInit Completed");
         }
 
         void TestPeriodic ()
         {
-            if (packetsReceived % 100 == 0) //Update PID and setpoint values from shuffleboard
+            //FIX IF STATEMENT TO USE TIMESTAMP
+            if (packetsReceived % 10 == 0) //Update PID and setpoint values from shuffleboard
             {
                 //Every 100 packets (2 seconds), update P, I, D values
                 pConstant = SmartDashboard::GetNumber ("P Drive", pConstant);
                 iConstant = SmartDashboard::GetNumber ("I Drive", iConstant);
                 dConstant = SmartDashboard::GetNumber ("D Drive", dConstant);
+                maxAccel = SmartDashboard::GetNumber("Maximum Acceleration", maxAccel);
                 setPoint = SmartDashboard::GetNumber ("Setpoint Drive", setPoint);
                 SmartDashboard::PutNumber ("Current Position - Right", _rMotor->GetSensorCollection ().GetQuadraturePosition ());
                 SmartDashboard::PutNumber ("Current Position - Left", _lMotor->GetSensorCollection ().GetQuadraturePosition ());
                 _lMotor->Config_kP (0, pConstant, checkTimeout);
                 _lMotor->Config_kI (0, iConstant, checkTimeout);
                 _lMotor->Config_kD (0, dConstant, checkTimeout);
+                _lMotor->ConfigMotionAcceleration(maxAccel, checkTimeout);
                 _rMotor->Config_kP (0, pConstant, checkTimeout);
                 _rMotor->Config_kI (0, iConstant, checkTimeout);
                 _rMotor->Config_kD (0, dConstant, checkTimeout);
+                _rMotor->ConfigMotionAcceleration(maxAccel, checkTimeout);
+                //int res1 = _lMotor->SelectProfileSlot(0, SmartDashboard::GetNumber("lMotor Profile", 100));
+                //int res2 = _rMotor->SelectProfileSlot(0, SmartDashboard::GetNumber("rMotor Profile", 100));
+                //SmartDashboard::PutNumber ("but did it really", res1);
             }
 
             packetsReceived++;
-            myRobot->PIDDrive (setPoint, setPoint);
+            _lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::MotionMagic, setPoint);
+            _rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::MotionMagic, -setPoint);
+            //myRobot->PIDDrive (setPoint, -setPoint);
+
         }
 
         void ConfigPIDS ()
@@ -158,9 +150,11 @@ class Robot : public frc::IterativeRobot
             _lMotor->Config_kP (0, pConstant, checkTimeout);
             _lMotor->Config_kI (0, iConstant, checkTimeout);
             _lMotor->Config_kD (0, dConstant, checkTimeout);
+            _lMotor->ConfigMotionAcceleration(maxAccel, checkTimeout);
             _rMotor->Config_kP (0, pConstant, checkTimeout);
             _rMotor->Config_kI (0, iConstant, checkTimeout);
             _rMotor->Config_kD (0, dConstant, checkTimeout);
+            _rMotor->ConfigMotionAcceleration(maxAccel, checkTimeout);
 
             DriverStation::ReportError ("PID Config Completed");
         }
