@@ -31,11 +31,12 @@ class Robot : public frc::IterativeRobot
         double pConstant = 1;
         double iConstant = 0;
         double dConstant = 0;
-        double maxAccel = 1000;
+        double maxAccel = 100;
         double setPoint = 0;
         //the timeout that you want to set.(If zero, no blocking or checking is performed.)
         int checkTimeout = 0;
         int packetsReceived = 0;
+        ctre::phoenix::motion::MotionProfileStatus autonStatus;
 
     private:
         WPI_TalonSRX * _rMotor = new WPI_TalonSRX (rMotorNum);
@@ -52,6 +53,8 @@ class Robot : public frc::IterativeRobot
             _rMotor->ConfigSelectedFeedbackSensor (qE, 0, checkTimeout);
 
             //used for inverting motors
+            _rMotor->SetInverted(true);
+            _lMotor->SetInverted(true);
             _rMotor->SetSensorPhase(true);
             _lMotor->SetSensorPhase(true);
 
@@ -71,12 +74,23 @@ class Robot : public frc::IterativeRobot
              */
             DriverStation::ReportError ("AutonInit Started");
             ConfigPIDS ();
+            TrajectoryPoint first;
+            TrajectoryPoint second;
+
+            first.position = 100000;
+            second.position = 0;
+
+            _lMotor->PushMotionProfileTrajectory(first);
+            _lMotor->PushMotionProfileTrajectory(second);
+            _lMotor->ProcessMotionProfileBuffer();
             DriverStation::ReportError ("AutonInit Completed");
         }
 
         void AutonomousPeriodic ()
         {
-
+            _lMotor->GetMotionProfileStatus(autonStatus);
+            if(!autonStatus.activePointValid)
+            _lMotor->ProcessMotionProfileBuffer();
         }
 
         void TeleopInit ()
@@ -103,6 +117,7 @@ class Robot : public frc::IterativeRobot
             SmartDashboard::PutNumber ("Current Position - Left", 0);
             SmartDashboard::PutNumber("lMotor Profile", 0);
             SmartDashboard::PutNumber("rMotor Profile", 0);
+            SmartDashboard::PutBoolean("Setpoint?", false);
             DriverStation::ReportError ("TestInit Completed");
         }
 
@@ -127,20 +142,45 @@ class Robot : public frc::IterativeRobot
                 _rMotor->Config_kI (0, iConstant, checkTimeout);
                 _rMotor->Config_kD (0, dConstant, checkTimeout);
                 _rMotor->ConfigMotionAcceleration(maxAccel, checkTimeout);
-                //int res1 = _lMotor->SelectProfileSlot(0, SmartDashboard::GetNumber("lMotor Profile", 100));
-                //int res2 = _rMotor->SelectProfileSlot(0, SmartDashboard::GetNumber("rMotor Profile", 100));
-                //SmartDashboard::PutNumber ("but did it really", res1);
             }
 
+            _rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::MotionProfile, 1);
+            _lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::MotionProfile, 1);
+
             packetsReceived++;
-            _lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::MotionMagic, setPoint);
-            _rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::MotionMagic, -setPoint);
+            if(SmartDashboard::GetBoolean("Setpoint?", false))
+            {
+                TrajectoryPoint l;
+                TrajectoryPoint r;
+                l.position = -setPoint;
+                r.position = setPoint;
+                l.velocity = 0.8;
+                r.velocity = 0.8;
+                l.zeroPos = false;
+                r.zeroPos = false;
+
+                _lMotor->PushMotionProfileTrajectory(l);
+                _rMotor->PushMotionProfileTrajectory(r);
+                _lMotor->ProcessMotionProfileBuffer();
+                _rMotor->ProcessMotionProfileBuffer();
+                SmartDashboard::PutBoolean("Setpoint?", false);
+                DriverStation::ReportError(std::to_string(_lMotor->GetMotionProfileTopLevelBufferCount()));
+            }
+
+
+            //DriverStation::ReportError(std::to_string(_lMotor->));
             //myRobot->PIDDrive (setPoint, -setPoint);
 
         }
 
         void ConfigPIDS ()
         {
+            _rMotor->Set(ctre::phoenix::motorcontrol::ControlMode::MotionProfile, 1);
+            _lMotor->Set(ctre::phoenix::motorcontrol::ControlMode::MotionProfile, 1);
+
+            _rMotor->ClearMotionProfileTrajectories();
+            _lMotor->ClearMotionProfileTrajectories();
+
             DriverStation::ReportError ("PID Config Started");
             _rMotor->GetSensorCollection ().SetQuadraturePosition (0, checkTimeout);
             _rMotor->GetSensorCollection ().SetQuadraturePosition (0, checkTimeout);
