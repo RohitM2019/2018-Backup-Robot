@@ -79,18 +79,28 @@ class Robot : public frc::IterativeRobot
 
             first.position = 100000;
             second.position = 0;
-
+            first.isLastPoint = false;
+            second.isLastPoint = false;
+            //first.profileSlotSelect = 0;
+            //second.profileSlotSelect = 0;
+            first.velocity = 0;
+            second.velocity = 0;
+            first.zeroPos = false;
+            second.zeroPos = false;
             _lMotor->PushMotionProfileTrajectory(first);
             _lMotor->PushMotionProfileTrajectory(second);
-            _lMotor->ProcessMotionProfileBuffer();
             DriverStation::ReportError ("AutonInit Completed");
         }
 
         void AutonomousPeriodic ()
         {
             _lMotor->GetMotionProfileStatus(autonStatus);
-            if(!autonStatus.activePointValid)
-            _lMotor->ProcessMotionProfileBuffer();
+            if(_lMotor->GetSensorCollection().GetQuadraturePosition() == 100000)
+            {
+                _lMotor->ProcessMotionProfileBuffer();
+                DriverStation::ReportError("Woof");
+            }
+
         }
 
         void TeleopInit ()
@@ -195,6 +205,9 @@ class Robot : public frc::IterativeRobot
             _rMotor->Config_kI (0, iConstant, checkTimeout);
             _rMotor->Config_kD (0, dConstant, checkTimeout);
             _rMotor->ConfigMotionAcceleration(maxAccel, checkTimeout);
+
+            _lMotor->ClearStickyFaults(checkTimeout);
+            _rMotor->ClearStickyFaults(checkTimeout);
 
             DriverStation::ReportError ("PID Config Completed");
         }
